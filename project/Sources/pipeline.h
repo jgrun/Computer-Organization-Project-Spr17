@@ -8,30 +8,14 @@
 #ifndef PIPELINE_H_
 #define PIPELINE_H_
 
-typedef struct IFID_t {
+void instruction_fetch();
 
-}IFID;
+void instruction_decode();
 
-typedef struct IDEX_t {
+void execute_instruction();
 
-}IDEX;
+void memory_access();
 
-typedef struct EXMEM_t {
-
-}EXMEM;
-
-typedef struct MEMWB_t {
-
-}MEMWB;
-
-void instruction_fetch(IFID * ifid);
-
-void instruction_decode(IFID * ifid, IDEX * idex);
-
-void execute_instruction(IDEX * idex, EXMEM * exmem);
-
-void memory_access(EXMEM * exmem, MEMWB * memwb);
-
-void write_back(MEMWB * memwb)
+void write_back();
 
 #endif /* PIPELINE_H_ */
