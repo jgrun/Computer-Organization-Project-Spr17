@@ -6,3 +6,7 @@
  */
 
 
+void instruction_fetch(ifid, pc_t pc) {
+
+}
+
