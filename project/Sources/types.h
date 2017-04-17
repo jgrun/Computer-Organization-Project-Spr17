@@ -11,6 +11,21 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#endif /* TYPES_H_ */
+
+#ifndef _TYPES_H
+#define _TYPES_H
+
+#include <stdint.h>
+#include <stdbool.h>
+
+// 32 bit instructions
+typedef uint32_t inst;
+// store program counter as uint32
+typedef uint32_t pc_t;
+// words are also 32 bits
+typedef uint32_t word;
+
 typedef struct CONTROL_REGISTER {
 	bool RegDst; // rd if 0, rt if 1
 	bool RegWrite; // nothing if 0, write register is written from write data input
@@ -20,18 +35,18 @@ typedef struct CONTROL_REGISTER {
 	bool MemWrite; // nothing if 0, data memory contents designated by the address input are replaced by the value on the write data input if 1
 	bool MemtoReg; // The value fed to the register write data comes from the ALU if 0, from data memory if 1
 
-    operation_t ALUop;  // ALU operation
-    bool jump;          // Override PC with shifted and concatenated address
+    operation ALUop; // ALU operation
+    bool jump; // perform jump
 
-    inst_t instr;       // Raw instruction
+    inst instr; // Raw instruction
 
-    opcode_t opCode;
+    opcode opCode;
     uint32_t regRs;
     uint32_t regRt;
     uint32_t regRd;
     uint32_t immed;
     uint32_t address;
-    funct_t funct;
+    function funct;
     uint32_t shamt;
 
     uint32_t regRsValue;
@@ -42,64 +57,49 @@ typedef struct CONTROL_REGISTER {
     uint32_t memData;
 }control;
 
-#endif /* TYPES_H_ */
-
-#ifndef _TYPES_H
-#define _TYPES_H
-
-#include <stdint.h>
-#include <stdbool.h>
-
-// Represents a 32-bit instruction
-typedef uint32_t inst;
-// Represents a 32-bit program counter
-typedef uint32_t pc_t;
-// Represents a single word (32b) of memory, with ambiguous signedness
-typedef uint32_t word;
-
-// Mapping opcode values to mnemonic
+// make opcodes easier to use
 typedef enum OpCodes {
-    op_Rtype   = 0x00,
-    op_Addi    = 0x08, // 0b001000, Add Immediate Word
-    op_Addiu   = 0x09, // 0b001001, Add Immediate Unsigned Word
-    op_Andi    = 0x0c, // 0b001100, And Immediate
-    op_Beq     = 0x04, // 0b000100, Branch on Equal
-    op_Bne     = 0x05, // 0b000101, Branch on Not Equal
-    op_Blitz    = 0x01, // 0b000001, Branch on less than zero
-    op_Bgtz    = 0x07, // 0b000111, Branch on greater than zero
-    op_Blez    = 0x06, // 0b000110, Branch on less than equal to zero
-    op_Jtype       = 0x02, // 0b000010, Jump
-    op_Jal     = 0x03, // 0b000011, Jump And Link
-    op_Lb      = 0x20, // 0b100000, Load Byte
-    op_Lbu     = 0x24, // 0b100100, Load Byte Unsigned
-    op_Lh      = 0x21, // 0b100001, Load Halfword
-    op_Lhu     = 0x25, // 0b100101, Load Halfword Unsigned
-    op_Lui     = 0x0f, // 0b001111, Load Upper Immediate
-    op_Lw      = 0x23, // 0b100011, Load Word
-    op_Ori     = 0x0d, // 0b001101, Or Immediate
-    op_Sb      = 0x28, // 0b101000, Store Byte
-    op_Sh      = 0x29, // 0b101001, Store Halfword
-    op_Slti    = 0x0a, // 0b001010, Set on Less Than Immediate
-    op_Sltiu   = 0x0b, // 0b001011, Set on Less Than Immediate Unsigned
-    op_Sw      = 0x2b, // 0b101011, Store Word
-    op_Xori    = 0x0e  // 0b001110, Exclusive OR Immediate
+    op_rtype   = 0x00,
+    op_addi    = 0x08, // add immediate word
+    op_addiu   = 0x09, // add immediate unsigned word
+    op_andi    = 0x0c,
+    op_beq     = 0x04,
+    op_bne     = 0x05,
+    op_blitz   = 0x01, // branch on less than zero
+    op_bgtz    = 0x07,
+    op_blez    = 0x06, // branch on less than equal to zero
+    op_jtype   = 0x02, // jump
+    op_jal     = 0x03, // jump and link
+    op_lb      = 0x20, // load byte
+    op_lbu     = 0x24, // load byte unsigned
+    op_lh      = 0x21, // load halfword
+    op_lhu     = 0x25, // load halfword unsigned
+    op_lui     = 0x0f, // load upper immediate
+    op_lw      = 0x23, // load word
+    op_ori     = 0x0d,
+    op_sb      = 0x28, // store byte
+    op_sh      = 0x29, // store halfword
+    op_slti    = 0x0a, // Set on less than immediate
+    op_sltiu   = 0x0b, // Set on less than unsigned immediate
+    op_sw      = 0x2b,
+    op_xori    = 0x0e
 } opcode;
 
-// Mapping funct values to mnemonic (R-type, opcode=0x0)
+//r-type
 typedef enum FunctCodes {
-    funct_Add     = 0x20, // 0b100000, Add Word
-    funct_Addu    = 0x21, // 0b100001, Add Unsigned Word
-    funct_And     = 0x24, // 0b100100, And
-    funct_Jr      = 0x08, // 0b001000, Jump Register
-    funct_Nor     = 0x27, // 0b100111, Not Or
-    funct_Or      = 0x25, // 0b100101, Or
-    funct_Sll     = 0x00, // 0b000000, Shift Word Left Logical
-    funct_Slt     = 0x2a, // 0b101010, Set On Less Than
-    funct_Sltu    = 0x2b, // 0b101011, Set on Less Than Unsigned
-    funct_Srl     = 0x02, // 0b000010, Shift Word Right Logical
-    funct_Sub     = 0x22, // 0b100010, Subtract Word
-    funct_Subu    = 0x23, // 0b100011, Subtract Unsigend Word
-    funct_Xor     = 0x26  // 0b100110, Exclusive OR
+    funct_add     = 0x20,
+    funct_addu    = 0x21,
+    funct_and     = 0x24,
+    funct_jr      = 0x08, // jump register
+    funct_nor     = 0x27,
+    funct_or      = 0x25,
+    funct_sll     = 0x00, // shift word left logical
+    funct_slt     = 0x2a, // set on less than
+    funct_sltu    = 0x2b, // set on less than unsigned
+    funct_srl     = 0x02, // shift word right logical
+    funct_sub     = 0x22,
+    funct_subu    = 0x23,
+    funct_xor     = 0x26
 } function;
 
 // Enumerate all "operations" (R/J/I type instruction action)
@@ -166,6 +166,5 @@ typedef enum Operations {
 
     oper_Trap
 }operation;
-
 
 #endif /* _TYPES_H */
