@@ -28,7 +28,7 @@
 #define SHIFT_SH 6
 
 // extenders
-#define BIT15 0x00008000
+#define NEGATIVE 0x00008000
 #define EXTEND16 0xffff0000
 
 void instruction_fetch(control * ifid, pc_t * pc);
