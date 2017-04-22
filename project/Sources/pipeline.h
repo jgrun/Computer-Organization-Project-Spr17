@@ -35,7 +35,7 @@ void instruction_fetch(control * ifid, pc_t * pc, inst instruction);
 
 void instruction_decode();
 
-void execute_instruction();
+void execute_instruction(control * idex, control * exmem);
 
 void memory_access();
 

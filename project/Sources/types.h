@@ -123,12 +123,16 @@ typedef enum Operations {
     oper_Sh,
     oper_Sw,
 
+	oper_movn,
+	oper_movz,
+
     oper_Mfhi,
     oper_Mflo,
     oper_Mthi,
     oper_Mtlo,
 
-    oper_Trap
+    oper_seb,
+	oper_seh
 }operation;
 
 typedef struct CONTROL_REGISTER {
