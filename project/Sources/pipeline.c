@@ -356,29 +356,15 @@ void execute_instruction(control * idex, control * exmem) {
 	exmem->ALUresult = alu_result;
 }
 
-void print_control_reg(control reg, r_type t) {
-	switch(t) {
-	case IFID:
-		printf("opCode:   %#02x\n", reg.opCode);
-		printf("regRs:    %#04x\n", reg.regRs);
-		printf("regRd:    %#04x\n", reg.regRd);
-		printf("regRt:    %#04x\n", reg.regRt);
-		printf("shamt:    %#04x\n", reg.shamt);
-		printf("address:  %#04x\n", reg.address);
-		printf("funct:    %#02x\n", reg.funct);
-		printf("immed:    %d\n", reg.immed);
-		break;
-	case IDEX:
-		break;
-	case EXMEM:
-		break;
-	case MEMWB:
-		break;
-	default:
-		printf("Bad register type\n");
-		break;
-	}
-
+void print_control_reg(control reg) {
+	printf("opCode:   %#02x\n", reg.opCode);
+	printf("regRs:    %#04x\n", reg.regRs);
+	printf("regRd:    %#04x\n", reg.regRd);
+	printf("regRt:    %#04x\n", reg.regRt);
+	printf("shamt:    %#04x\n", reg.shamt);
+	printf("address:  %#04x\n", reg.address);
+	printf("funct:    %#02x\n", reg.funct);
+	printf("immed:    %d\n\n", reg.immed);
 	printf("pc:       %d\n", reg.pcNext);
 	printf("RegDst:   %d\n", reg.RegDst);
 	printf("RegWrite: %d\n", reg.RegWrite);
