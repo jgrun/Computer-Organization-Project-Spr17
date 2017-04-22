@@ -5,9 +5,14 @@
  *      Author: jacob
  */
 #include <stdio.h>
+#include "pipeline.h"
+#include "types.h"
 
 
 int main() {
-	printf("Hello, world!\n");
-	return 0;
+	control ifid;
+	pc_t pc = 0;
+	instruction_fetch(&ifid, &pc, 0x2229FFF6);
+	print_control_reg(ifid, IFID);
+	while(1);
 }
