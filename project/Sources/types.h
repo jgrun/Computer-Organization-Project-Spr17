@@ -191,7 +191,7 @@ typedef enum REGISTERNames {
     REGISTER_SP      = 29,
     REGISTER_FP      = 30,
     REGISTER_RA      = 31
-}register;
+}register_t;
 
 
 #endif /* _TYPES_H */
