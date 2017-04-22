@@ -11,7 +11,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define bool int
+#define true 1
+#define false 0
+
 typedef struct CONTROL_REGISTER {
+
+
 	bool RegDst; // rd if 0, rt if 1
 	bool RegWrite; // nothing if 0, write register is written from write data input
 	bool ALUSrc; // second ALU operand comes from second register file output if 0 or sign extended lower 16 bits of instruction if 1
@@ -20,18 +26,18 @@ typedef struct CONTROL_REGISTER {
 	bool MemWrite; // nothing if 0, data memory contents designated by the address input are replaced by the value on the write data input if 1
 	bool MemtoReg; // The value fed to the register write data comes from the ALU if 0, from data memory if 1
 
-    operation_t ALUop;  // ALU operation
-    bool jump;          // Override PC with shifted and concatenated address
+    operation ALUop; // ALU operation
+    bool jump; // perform jump
 
-    inst_t instr;       // Raw instruction
+    inst instr; // Raw instruction
 
-    opcode_t opCode;
+    opcode opCode;
     uint32_t regRs;
     uint32_t regRt;
     uint32_t regRd;
     uint32_t immed;
     uint32_t address;
-    funct_t funct;
+    function funct;
     uint32_t shamt;
 
     uint32_t regRsValue;
@@ -41,14 +47,6 @@ typedef struct CONTROL_REGISTER {
     uint32_t pcNext;
     uint32_t memData;
 }control;
-
-#endif /* TYPES_H_ */
-
-#ifndef _TYPES_H
-#define _TYPES_H
-
-#include <stdint.h>
-#include <stdbool.h>
 
 // Represents a 32-bit instruction
 typedef uint32_t inst;
@@ -68,7 +66,7 @@ typedef enum OpCodes {
     op_Blitz    = 0x01, // 0b000001, Branch on less than zero
     op_Bgtz    = 0x07, // 0b000111, Branch on greater than zero
     op_Blez    = 0x06, // 0b000110, Branch on less than equal to zero
-    op_Jtype       = 0x02, // 0b000010, Jump
+    op_Jtype   = 0x02, // 0b000010, Jump
     op_Jal     = 0x03, // 0b000011, Jump And Link
     op_Lb      = 0x20, // 0b100000, Load Byte
     op_Lbu     = 0x24, // 0b100100, Load Byte Unsigned
@@ -90,7 +88,7 @@ typedef enum FunctCodes {
     funct_Add     = 0x20, // 0b100000, Add Word
     funct_Addu    = 0x21, // 0b100001, Add Unsigned Word
     funct_And     = 0x24, // 0b100100, And
-    funct_Jr      = 0x08, // 0b001000, Jump Register
+    funct_Jr      = 0x08, // 0b001000, Jump REGISTERister
     funct_Nor     = 0x27, // 0b100111, Not Or
     funct_Or      = 0x25, // 0b100101, Or
     funct_Sll     = 0x00, // 0b000000, Shift Word Left Logical
@@ -166,6 +164,42 @@ typedef enum Operations {
 
     oper_Trap
 }operation;
+
+
+typedef enum REGISTERNames {
+    REGISTER_ZERO    =  0,
+    REGISTER_AT      =  1,
+    REGISTER_V0      =  2,
+    REGISTER_V1      =  3,
+    REGISTER_A0      =  4,
+    REGISTER_A1      =  5,
+    REGISTER_A2      =  6,
+    REGISTER_A3      =  7,
+    REGISTER_T0      =  8,
+    REGISTER_T1      =  9,
+    REGISTER_T2      = 10,
+    REGISTER_T3      = 11,
+    REGISTER_T4      = 12,
+    REGISTER_T5      = 13,
+    REGISTER_T6      = 14,
+    REGISTER_T7      = 15,
+    REGISTER_S0      = 16,
+    REGISTER_S1      = 17,
+    REGISTER_S2      = 18,
+    REGISTER_S3      = 19,
+    REGISTER_S4      = 20,
+    REGISTER_S5      = 21,
+    REGISTER_S6      = 22,
+    REGISTER_S7      = 23,
+    REGISTER_T8      = 24,
+    REGISTER_T9      = 25,
+    REGISTER_K0      = 26,
+    REGISTER_K1      = 27,
+    REGISTER_GP      = 28,
+    REGISTER_SP      = 29,
+    REGISTER_FP      = 30,
+    REGISTER_RA      = 31
+}register;
 
 
 #endif /* _TYPES_H */
