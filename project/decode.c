@@ -1,42 +1,18 @@
 /*
- * pipeline.c
+ * decode.c
  *
- *  Created on: Mar 15, 2017
- *      Author: jacob
+ *  Created on: Apr 19, 2017
+ *      Author: croney
  */
 
-#include <stdio.h>
-#include "pipeline.h"
 
 #define NEXT 0xF0000000
-#define SHIFT_NUM 16
-
-void instruction_fetch(control * ifid, pc_t * pc, inst instruction) {
-
-	// Still need to write code for reading in instr
-	ifid->instr = instruction;
+#define bool int
+#define true 1
+#define false 0
 
 
-	ifid->opCode = (ifid->instr & OP_MASK) >> SHIFT_OP;
-	ifid->regRs  = (ifid->instr & RS_MASK) >> SHIFT_RS;
-	ifid->regRd  = (ifid->instr & RD_MASK) >> SHIFT_RD;
-	ifid->regRt  = (ifid->instr & RT_MASK) >> SHIFT_RT;
-	ifid->shamt  = (ifid->instr & SH_MASK) >> SHIFT_SH;
-	ifid->address  = (ifid->instr & AD_MASK);
-	ifid->funct  = (ifid->instr & FC_MASK);
-
-	uint32_t immediate = (ifid->instr & IM_MASK);
-
-	// Sign extend if necessary
-	if((ifid->instr & NEGATIVE) && (ifid->opCode != op_andi) && (ifid->opCode != op_ori) && (ifid->opCode != op_xori) && (ifid->opCode != op_sltiu)) {
-		ifid->immed = immediate | EXTEND16;
-	}
-	else ifid->immed = immediate;
-
-	ifid->pcNext = *pc + 4;
-}
-
-int instruction_decode( control * IFID , control * IDEX) {
+int DECODE( control * IFID , control * IDEX) {
 
 	typedef uint32_t reg_Word[32];
 
@@ -265,7 +241,7 @@ int instruction_decode( control * IFID , control * IDEX) {
             IDEX->MemtoReg = false;
             IDEX->PCSrc = false;
             IDEX->jump = false;
-            IDEX->shamt = SHIFT_NUM;
+            IDEX->shamt = 16; // fixed shift amount
             break;
         default:
             break;
@@ -288,24 +264,20 @@ int instruction_decode( control * IFID , control * IDEX) {
     else {
         IDEX->pcNext = IDEX->pcNext + ( IDEX->immed << 2 );
     }
-    //Take branch
     if(IDEX->opCode == op_beq){
         if(IDEX->regRsValue == IDEX->regRtValue){
-            IDEX->PCSrc = true;
+            IDEX->PCSrc = true; //Branch is taken, use pcNext for address
         }
-        //Don't take branch
         else{
-            IDEX->PCSrc = false;
+            IDEX->PCSrc = false; //Branch not taken
         }
     }
-    //Took branch
     else if (IDEX->opCode == op_bne){
         if(IDEX->regRsValue != IDEX->regRtValue){
             IDEX->PCSrc = true;  //Branch taken
         }
-        //Did not take branch
         else{
-            IDEX->PCSrc = false;
+            IDEX->PCSrc = false; //Branch not taken
         }
     }
     else if (IDEX->opCode == op_blitz){
@@ -337,40 +309,6 @@ int instruction_decode( control * IFID , control * IDEX) {
 
 }
 
-void print_control_reg(control reg, r_type t) {
-	switch(t) {
-	case IFID:
-		printf("opCode:   %#02x\n", reg.opCode);
-		printf("regRs:    %#04x\n", reg.regRs);
-		printf("regRd:    %#04x\n", reg.regRd);
-		printf("regRt:    %#04x\n", reg.regRt);
-		printf("shamt:    %#04x\n", reg.shamt);
-		printf("address:  %#04x\n", reg.address);
-		printf("funct:    %#02x\n", reg.funct);
-		printf("immed:    %d\n", reg.immed);
-		break;
-	case IDEX:
-		break;
-	case EXMEM:
-		break;
-	case MEMWB:
-		break;
-	default:
-		printf("Bad register type\n");
-		break;
-	}
-
-	printf("pc:       %d\n", reg.pcNext);
-	printf("RegDst:   %d\n", reg.RegDst);
-	printf("RegWrite: %d\n", reg.RegWrite);
-	printf("ALUSrc:   %d\n", reg.ALUSrc);
-	printf("PCSrc:    %d\n", reg.PCSrc);
-	printf("MemRead:  %d\n", reg.MemRead);
-	printf("MemWrite: %d\n", reg.MemWrite);
-	printf("MemtoReg: %d\n", reg.RegDst);
-
-
-}
 
 void clonePipeline(control* original, control* clone){
     clone->RegDst        = original->RegDst;
@@ -397,35 +335,6 @@ void clonePipeline(control* original, control* clone){
     clone->pcNext        = original->pcNext;
 }
 
-void setForImmed(control * IDEX){
-    IDEX->RegDst = false;
-    IDEX->ALUSrc = true;
-    IDEX->MemtoReg = false;
-    IDEX->RegWrite = true;
-    IDEX->MemRead = false;
-    IDEX->MemWrite = false;
-    IDEX->jump = false;
-    IDEX->PCSrc = false;
+void reg_read(, int reg) {
+    *value = regfile[reg];
 }
-
-
-void setLoad(control * IDEX){
-    IDEX->RegDst = false;
-    IDEX->ALUSrc = true;
-    IDEX->MemtoReg = true;
-    IDEX->RegWrite = true;
-    IDEX->MemRead = true;
-    IDEX->MemWrite = false;
-    IDEX->jump = false;
-    IDEX->PCSrc = false;
-}
-
-void storeIdex(control * IDEX){
-    IDEX->ALUSrc = true;
-    IDEX->RegWrite = false;
-    IDEX->MemRead = false;
-    IDEX->MemWrite = true;
-    IDEX->jump = false;
-    IDEX->PCSrc = false;
-}
-

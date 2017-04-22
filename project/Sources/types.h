@@ -51,6 +51,8 @@ typedef enum FunctCodes {
     funct_addu    = 0x21,
     funct_and     = 0x24,
     funct_jr      = 0x08, // jump register
+	funct_movn    = 0x0b, //move on not zero
+    funct_movz    = 0x0a, //move on zero
     funct_nor     = 0x27,
     funct_or      = 0x25,
     funct_sll     = 0x00, // shift word left logical
@@ -80,6 +82,8 @@ typedef enum Operations {
     oper_Nor,
     oper_Or,
     oper_Ori,
+	oper_Movn,
+	oper_Movz,
     oper_Sll,
     oper_Sllv,
     oper_Sra,
