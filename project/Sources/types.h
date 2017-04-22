@@ -10,6 +10,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define NEGATIVE 0x00008000
+#define EXTEND16 0xffff0000
+#define EXTEND8  0xffffff00
+
+
 // 32 bit instructions
 typedef uint32_t inst;
 // store program counter as uint32

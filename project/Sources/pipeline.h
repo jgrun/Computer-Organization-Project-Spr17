@@ -27,10 +27,6 @@
 #define SHIFT_RD 11
 #define SHIFT_SH 6
 
-// extenders
-#define NEGATIVE 0x00008000
-#define EXTEND16 0xffff0000
-
 void instruction_fetch(control * ifid, pc_t * pc, inst instruction);
 
 void instruction_decode();

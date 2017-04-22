@@ -349,9 +349,11 @@ void execute_instruction(control * idex, control * exmem) {
 
 	alu_result = idex->ALUresult;
 
-	alu();
+	alu(idex->ALUop, alu_rs, alu_rt, idex->shamt, &alu_result);
 
 	if((idex->ALUop == oper_movz && alu_rt != 0) || (idex->ALUop == oper_movn && alu_rt == 0)) idex->RegWrite = false;
+
+	exmem->ALUresult = alu_result;
 }
 
 void print_control_reg(control reg, r_type t) {
