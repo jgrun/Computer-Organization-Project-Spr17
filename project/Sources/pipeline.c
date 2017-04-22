@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include "pipeline.h"
+#include "alu.h"
 
 void instruction_fetch(control * ifid, pc_t * pc, inst instruction) {
 
@@ -31,6 +32,23 @@ void instruction_fetch(control * ifid, pc_t * pc, inst instruction) {
 	else ifid->immed = immediate;
 
 	ifid->pcNext = *pc + 4;
+}
+
+void execute_instruction(control * idex, control * exmem) {
+	word alu_rs;
+	word alu_rt;
+	word alu_result;
+
+	alu_rs = idex->regRsValue;
+
+	if(idex->ALUSrc) alu_rt = idex->immed;
+	else alu_rt = idex->regRtValue;
+
+	alu_result = idex->ALUresult;
+
+	alu();
+
+	if((idex->ALUop == oper_movz && alu_rt != 0) || (idex->ALUop == oper_movn && alu_rt == 0)) idex->RegWrite = false;
 }
 
 void print_control_reg(control reg, r_type t) {
