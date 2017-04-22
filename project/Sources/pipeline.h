@@ -31,7 +31,7 @@
 #define NEGATIVE 0x00008000
 #define EXTEND16 0xffff0000
 
-void instruction_fetch(control * ifid, pc_t * pc);
+void instruction_fetch(control * ifid, pc_t * pc, inst instruction);
 
 void instruction_decode();
 
@@ -40,6 +40,15 @@ void execute_instruction();
 void memory_access();
 
 void write_back();
+
+typedef enum reg_type {
+	IFID,
+	IDEX,
+	EXMEM,
+	MEMWB
+}r_type;
+
+void print_control_reg(control reg, r_type t);
 
 
 

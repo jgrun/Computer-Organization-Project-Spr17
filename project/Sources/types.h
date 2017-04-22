@@ -26,37 +26,6 @@ typedef uint32_t pc_t;
 // words are also 32 bits
 typedef uint32_t word;
 
-typedef struct CONTROL_REGISTER {
-	bool RegDst; // rd if 0, rt if 1
-	bool RegWrite; // nothing if 0, write register is written from write data input
-	bool ALUSrc; // second ALU operand comes from second register file output if 0 or sign extended lower 16 bits of instruction if 1
-	bool PCSrc; // PC is incremented by 4 normally if 0, branch taken if 1
-	bool MemRead; // nothing if 0, data memory contents designated by the address input are put on the read data output if 1
-	bool MemWrite; // nothing if 0, data memory contents designated by the address input are replaced by the value on the write data input if 1
-	bool MemtoReg; // The value fed to the register write data comes from the ALU if 0, from data memory if 1
-
-    operation ALUop; // ALU operation
-    bool jump; // perform jump
-
-    inst instr; // Raw instruction
-
-    opcode opCode;
-    uint32_t regRs;
-    uint32_t regRt;
-    uint32_t regRd;
-    uint32_t immed;
-    uint32_t address;
-    function funct;
-    uint32_t shamt;
-
-    uint32_t regRsValue;
-    uint32_t regRtValue;
-
-    uint32_t ALUresult;
-    uint32_t pcNext;
-    uint32_t memData;
-}control;
-
 // make opcodes easier to use
 typedef enum OpCodes {
     op_rtype   = 0x00,
@@ -166,5 +135,36 @@ typedef enum Operations {
 
     oper_Trap
 }operation;
+
+typedef struct CONTROL_REGISTER {
+	bool RegDst; // rd if 0, rt if 1
+	bool RegWrite; // nothing if 0, write register is written from write data input
+	bool ALUSrc; // second ALU operand comes from second register file output if 0 or sign extended lower 16 bits of instruction if 1
+	bool PCSrc; // PC is incremented by 4 normally if 0, branch taken if 1
+	bool MemRead; // nothing if 0, data memory contents designated by the address input are put on the read data output if 1
+	bool MemWrite; // nothing if 0, data memory contents designated by the address input are replaced by the value on the write data input if 1
+	bool MemtoReg; // The value fed to the register write data comes from the ALU if 0, from data memory if 1
+
+    operation ALUop; // ALU operation
+    bool jump; // perform jump
+
+    inst instr; // Raw instruction
+
+    opcode opCode;
+    uint32_t regRs;
+    uint32_t regRt;
+    uint32_t regRd;
+    uint32_t immed;
+    uint32_t address;
+    function funct;
+    uint32_t shamt;
+
+    uint32_t regRsValue;
+    uint32_t regRtValue;
+
+    uint32_t ALUresult;
+    uint32_t pcNext;
+    uint32_t memData;
+}control;
 
 #endif /* _TYPES_H */
