@@ -5,18 +5,23 @@
  *      Author: jacob
  */
 
-#include <stdio.h>
 #include "pipeline.h"
-#include "alu.h"
 
 #define NEXT 0xF0000000
 #define SHIFT_NUM 16
 
+extern word registers[32];
+
+#define TEST
+
 void instruction_fetch(control * ifid, pc_t * pc, inst instruction) {
 
 	// Still need to write code for reading in instr
+#ifdef TEST
 	ifid->instr = instruction;
+#else
 
+#endif
 
 	ifid->opCode = (ifid->instr & OP_MASK) >> SHIFT_OP;
 	ifid->regRs  = (ifid->instr & RS_MASK) >> SHIFT_RS;
@@ -37,14 +42,11 @@ void instruction_fetch(control * ifid, pc_t * pc, inst instruction) {
 	ifid->pcNext = *pc + 4;
 }
 
-int instruction_decode( control * IFID , control * IDEX) {
-
-	typedef uint32_t reg_Word[32];
+void instruction_decode( control * IFID , control * IDEX) {
 
 	//initialize the registers to 0
 	for(int i = 0; i < 32; i++)
-		reg_Word[i] = 0;
-
+		registers[i] = 0;
 
     clonePipeline(IFID, IDEX);
 
@@ -230,9 +232,9 @@ int instruction_decode( control * IFID , control * IDEX) {
             break;
         case op_jtype:
             IDEX->ALUop = oper_Addu;
-            IDEX->regRs = REGISTER_ZERO;
-            IDEX->regRt = REGISTER_ZERO;
-            IDEX->regRd = REGISTER_ZERO;
+            IDEX->regRs = r_zero;
+            IDEX->regRt = r_zero;
+            IDEX->regRd = r_zero;
             IDEX->RegDst = true;
             IDEX->ALUSrc = false;
             IDEX->RegWrite = true;
@@ -244,9 +246,9 @@ int instruction_decode( control * IFID , control * IDEX) {
             break;
         case op_jal:
             IDEX->ALUop = oper_Addu;
-            IDEX->regRs = REGISTER_ZERO;
-            IDEX->regRt = REGISTER_ZERO;
-            IDEX->regRd = REGISTER_RA;    //Override so we can put pc in $ra
+            IDEX->regRs = r_zero;
+            IDEX->regRt = r_zero;
+            IDEX->regRd = r_RA;    //Override so we can put pc in $ra
             IDEX->RegDst = true;
             IDEX->ALUSrc = false;
             IDEX->RegWrite = true;
@@ -273,9 +275,9 @@ int instruction_decode( control * IFID , control * IDEX) {
     }
 
     //for forwarding, put value of RS into Rs, same with RT. For RegRd, put ALU result into it. Read Registers.
-    &(IDEX->ALUresult) = reg_Word[IDEX->regRd];
-    &(IDEX->regRsValue) = reg_Word[IDEX->regRs];
-    &(IDEX->regRtValue) = reg_Word[IDEX->regRt];
+    (IDEX->ALUresult) = registers[IDEX->regRd];
+    (IDEX->regRsValue) = registers[IDEX->regRs];
+    (IDEX->regRtValue) = registers[IDEX->regRt];
 
     IDEX->address = ( IDEX->address << 2 );            //jump address
 
@@ -333,8 +335,6 @@ int instruction_decode( control * IFID , control * IDEX) {
             IDEX->PCSrc = false;
         }
     }
-
-    return 0;
 }
 
 void execute_instruction(control * idex, control * exmem) {
@@ -366,7 +366,11 @@ void write_back(control * memwb) {
 	if(memwb->MemtoReg) regValue = memwb->memData;
 	else regValue = memwb->ALUresult;
 
-	if(memwb->RegWrite) write_register();
+#ifdef TEST
+	if(memwb->RegWrite) printf("Write %#08x (%d) to register %d", regValue, regValue, reg);
+#else
+	if(memwb->RegWrite) write_register(reg, &regValue);
+#endif
 }
 
 void print_control_reg(control reg) {

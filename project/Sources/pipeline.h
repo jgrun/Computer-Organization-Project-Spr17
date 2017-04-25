@@ -9,6 +9,8 @@
 #define PIPELINE_H_
 
 #include "types.h"
+#include "alu.h"
+#include "reg.h"
 
 // maskers
 #define OP_MASK 0xfc000000
