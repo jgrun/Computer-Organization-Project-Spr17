@@ -356,6 +356,38 @@ void execute_instruction(control * idex, control * exmem) {
 	exmem->ALUresult = alu_result;
 }
 
+void memory_access(control * EXMEM, control * MEMWB)
+{
+	// If load or store, access memory
+	//If branch, replace PC with destination address
+	//Otherwise do nothing
+	clonePipeline(EXMEM, MEMWB);
+	switch(MEMWB->opCode)
+	{
+		case op_lw:
+		case op_lb:
+		case op_lbu:
+		case op_lhu:
+		case op_lui:
+		case op_sb:
+		case op_sh:
+		case op_sw:
+			//access memory
+			accessMemory();
+			break;
+		case op_beq:
+		case op_bne:
+		case op_blitz:
+		case op_bgtz:
+		case op_blez:
+			MEMWB->pcNext = MEMWB->address;
+			break;
+		default:
+			break;
+	}
+}
+
+
 void write_back(control * memwb) {
 	word reg;
 	word regValue;
@@ -371,6 +403,11 @@ void write_back(control * memwb) {
 #else
 	if(memwb->RegWrite) write_register(reg, &regValue);
 #endif
+}
+
+void accessMemory()
+{
+
 }
 
 void print_control_reg(control reg) {
