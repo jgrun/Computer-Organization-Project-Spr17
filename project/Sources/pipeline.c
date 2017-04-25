@@ -9,7 +9,6 @@
 #include "pipeline.h"
 #include "alu.h"
 
-
 #define NEXT 0xF0000000
 #define SHIFT_NUM 16
 
@@ -355,6 +354,19 @@ void execute_instruction(control * idex, control * exmem) {
 	if((idex->ALUop == oper_movz && alu_rt != 0) || (idex->ALUop == oper_movn && alu_rt == 0)) idex->RegWrite = false;
 
 	exmem->ALUresult = alu_result;
+}
+
+void write_back(control * memwb) {
+	word reg;
+	word regValue;
+
+	if(memwb->RegDst) reg = memwb->regRd;
+	else reg = memwb->regRt;
+
+	if(memwb->MemtoReg) regValue = memwb->memData;
+	else regValue = memwb->ALUresult;
+
+	if(memwb->RegWrite) write_register();
 }
 
 void print_control_reg(control reg) {

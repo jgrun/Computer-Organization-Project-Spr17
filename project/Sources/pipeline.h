@@ -29,13 +29,13 @@
 
 void instruction_fetch(control * ifid, pc_t * pc, inst instruction);
 
-void instruction_decode();
+void instruction_decode(control * IFID , control * IDEX);
 
 void execute_instruction(control * idex, control * exmem);
 
 void memory_access();
 
-void write_back();
+void write_back(control * memwb);
 
 typedef enum reg_type {
 	IFID,
