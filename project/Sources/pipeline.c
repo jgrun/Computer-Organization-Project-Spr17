@@ -9,6 +9,7 @@
 #include "pipeline.h"
 #include "alu.h"
 
+
 #define NEXT 0xF0000000
 #define SHIFT_NUM 16
 
@@ -400,37 +401,5 @@ void clonePipeline(control* original, control* clone){
     clone->regRtValue    = original->regRtValue;
     clone->ALUresult     = original->ALUresult;
     clone->pcNext        = original->pcNext;
-}
-
-void setForImmed(control * IDEX){
-    IDEX->RegDst = false;
-    IDEX->ALUSrc = true;
-    IDEX->MemtoReg = false;
-    IDEX->RegWrite = true;
-    IDEX->MemRead = false;
-    IDEX->MemWrite = false;
-    IDEX->jump = false;
-    IDEX->PCSrc = false;
-}
-
-
-void setLoad(control * IDEX){
-    IDEX->RegDst = false;
-    IDEX->ALUSrc = true;
-    IDEX->MemtoReg = true;
-    IDEX->RegWrite = true;
-    IDEX->MemRead = true;
-    IDEX->MemWrite = false;
-    IDEX->jump = false;
-    IDEX->PCSrc = false;
-}
-
-void storeIdex(control * IDEX){
-    IDEX->ALUSrc = true;
-    IDEX->RegWrite = false;
-    IDEX->MemRead = false;
-    IDEX->MemWrite = true;
-    IDEX->jump = false;
-    IDEX->PCSrc = false;
 }
 

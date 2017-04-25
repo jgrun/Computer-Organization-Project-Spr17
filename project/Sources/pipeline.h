@@ -48,9 +48,5 @@ void print_control_reg(control reg);
 
 void clonePipeline(control* original, control* clone);
 
-
-
-
-
 #endif /* PIPELINE_H_ */
 
