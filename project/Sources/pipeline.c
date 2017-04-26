@@ -14,6 +14,11 @@ extern word registers[32];
 
 #define TEST
 
+control * ifid;
+control * idex;
+control * exmem;
+control * memwb;
+
 void instruction_fetch(control * ifid, pc_t * pc, inst instruction) {
 
 	// Still need to write code for reading in instr
@@ -43,12 +48,7 @@ void instruction_fetch(control * ifid, pc_t * pc, inst instruction) {
 }
 
 void instruction_decode( control * IFID , control * IDEX) {
-
-	//initialize the registers to 0
-	for(int i = 0; i < 32; i++)
-		registers[i] = 0;
-
-    clonePipeline(IFID, IDEX);
+    copyPipeline(IFID, IDEX);
 
     switch(IDEX->opCode){
         case op_rtype:
@@ -342,6 +342,8 @@ void execute_instruction(control * idex, control * exmem) {
 	word alu_rt;
 	word alu_result;
 
+	copyPipeline(idex, exmem);
+
 	alu_rs = idex->regRsValue;
 
 	if(idex->ALUSrc) alu_rt = idex->immed;
@@ -361,7 +363,7 @@ void memory_access(control * EXMEM, control * MEMWB)
 	// If load or store, access memory
 	//If branch, replace PC with destination address
 	//Otherwise do nothing
-	clonePipeline(EXMEM, MEMWB);
+	copyPipeline(EXMEM, MEMWB);
 	switch(MEMWB->opCode)
 	{
 		case op_lw:
@@ -398,8 +400,10 @@ void write_back(control * memwb) {
 	if(memwb->MemtoReg) regValue = memwb->memData;
 	else regValue = memwb->ALUresult;
 
+#ifndef REGISTERS
 #ifdef TEST
 	if(memwb->RegWrite) printf("Write %#08x (%d) to register %d", regValue, regValue, reg);
+#endif
 #else
 	if(memwb->RegWrite) write_register(reg, &regValue);
 #endif
@@ -411,48 +415,64 @@ void accessMemory()
 }
 
 void print_control_reg(control reg) {
-	printf("opCode:   %#02x\n", reg.opCode);
-	printf("regRs:    %#04x\n", reg.regRs);
-	printf("regRd:    %#04x\n", reg.regRd);
-	printf("regRt:    %#04x\n", reg.regRt);
-	printf("shamt:    %#04x\n", reg.shamt);
-	printf("address:  %#04x\n", reg.address);
-	printf("funct:    %#02x\n", reg.funct);
-	printf("immed:    %d\n\n", reg.immed);
-	printf("pc:       %d\n", reg.pcNext);
-	printf("RegDst:   %d\n", reg.RegDst);
-	printf("RegWrite: %d\n", reg.RegWrite);
-	printf("ALUSrc:   %d\n", reg.ALUSrc);
-	printf("PCSrc:    %d\n", reg.PCSrc);
-	printf("MemRead:  %d\n", reg.MemRead);
-	printf("MemWrite: %d\n", reg.MemWrite);
-	printf("MemtoReg: %d\n", reg.RegDst);
+	printf("---------------------------\n");
+	printf("RegDst:    %#01x\n", reg.RegDst);
+	printf("RegWrite:  %#01x\n", reg.RegWrite);
+	printf("ALUSrc:    %#01x\n", reg.ALUSrc);
+	printf("PCSrc:     %#01x\n", reg.PCSrc);
+	printf("MemRead:   %#01x\n", reg.MemRead);
+	printf("MemWrite:  %#01x\n", reg.MemWrite);
+	printf("MemtoReg:  %#01x\n\n", reg.MemtoReg);
+	printf("ALUop:     %d\n", reg.ALUop);
+	printf("jump:      %#01x\n\n", reg.jump);
+	printf("instr:     %#08x\n\n", reg.instr);
+	printf("opCode:    %#02x\n", reg.opCode);
+	printf("regRs:     %#02x\n", reg.regRs);
+	printf("regRt:     %#02x\n", reg.regRt);
+	printf("regRd:     %#02x\n", reg.regRd);
+	printf("immed:     %d\n", reg.immed);
+	printf("funct:     %d\n\n", reg.funct);
+	printf("regRsValue:%d\n", reg.regRsValue);
+	printf("regRtValue:%d\n\n", reg.regRtValue);
+	printf("ALUresult: %d\n", reg.ALUresult);
+	printf("pcNext:    %d\n", reg.pcNext);
+	printf("memData:   %d\n", reg.memData);
+	printf("---------------------------\n\n");
 
 
 }
 
-void clonePipeline(control* original, control* clone){
-    clone->RegDst        = original->RegDst;
-    clone->RegWrite      = original->RegWrite;
-    clone->ALUSrc        = original->ALUSrc;
-    clone->PCSrc         = original->PCSrc;
-    clone->MemRead       = original->MemRead;
-    clone->MemWrite      = original->MemWrite;
-    clone->MemtoReg      = original->MemtoReg;
-    clone->ALUop         = original->ALUop;
-    clone->jump          = original->jump;
-    clone->instr         = original->instr;
-    clone->opCode        = original->opCode;
-    clone->regRs         = original->regRs;
-    clone->regRt         = original->regRt;
-    clone->regRd         = original->regRd;
-    clone->immed         = original->immed;
-    clone->address       = original->address;
-    clone->funct         = original->funct;
-    clone->shamt         = original->shamt;
-    clone->regRsValue    = original->regRsValue;
-    clone->regRtValue    = original->regRtValue;
-    clone->ALUresult     = original->ALUresult;
-    clone->pcNext        = original->pcNext;
+void copyPipeline(control* original, control* copy){
+    copy->RegDst        = original->RegDst;
+    copy->RegWrite      = original->RegWrite;
+    copy->ALUSrc        = original->ALUSrc;
+    copy->PCSrc         = original->PCSrc;
+    copy->MemRead       = original->MemRead;
+    copy->MemWrite      = original->MemWrite;
+    copy->MemtoReg      = original->MemtoReg;
+    copy->ALUop         = original->ALUop;
+    copy->jump          = original->jump;
+    copy->instr         = original->instr;
+    copy->opCode        = original->opCode;
+    copy->regRs         = original->regRs;
+    copy->regRt         = original->regRt;
+    copy->regRd         = original->regRd;
+    copy->immed         = original->immed;
+    copy->address       = original->address;
+    copy->funct         = original->funct;
+    copy->shamt         = original->shamt;
+    copy->regRsValue    = original->regRsValue;
+    copy->regRtValue    = original->regRtValue;
+    copy->ALUresult     = original->ALUresult;
+    copy->pcNext        = original->pcNext;
+}
+
+void init_pipeline() {
+	init_control_reg(&ifid);
+	init_control_reg(&idex);
+	init_control_reg(&exmem);
+	init_control_reg(&memwb);
+
+	// Need to probably call init memory here as well
 }
 

@@ -14,6 +14,7 @@
 #define NEGATIVE 0x00008000
 #define EXTEND16 0xffff0000
 #define EXTEND8  0xffffff00
+#define NUM_LINES 40
 
 
 // 32 bit instructions
@@ -171,41 +172,5 @@ typedef struct CONTROL_REGISTER {
     uint32_t pcNext;
     uint32_t memData;
 }control;
-
-typedef enum REGISTERNames {
-    REGISTER_ZERO    =  0,
-    REGISTER_AT      =  1,
-    REGISTER_V0      =  2,
-    REGISTER_V1      =  3,
-    REGISTER_A0      =  4,
-    REGISTER_A1      =  5,
-    REGISTER_A2      =  6,
-    REGISTER_A3      =  7,
-    REGISTER_T0      =  8,
-    REGISTER_T1      =  9,
-    REGISTER_T2      = 10,
-    REGISTER_T3      = 11,
-    REGISTER_T4      = 12,
-    REGISTER_T5      = 13,
-    REGISTER_T6      = 14,
-    REGISTER_T7      = 15,
-    REGISTER_S0      = 16,
-    REGISTER_S1      = 17,
-    REGISTER_S2      = 18,
-    REGISTER_S3      = 19,
-    REGISTER_S4      = 20,
-    REGISTER_S5      = 21,
-    REGISTER_S6      = 22,
-    REGISTER_S7      = 23,
-    REGISTER_T8      = 24,
-    REGISTER_T9      = 25,
-    REGISTER_K0      = 26,
-    REGISTER_K1      = 27,
-    REGISTER_GP      = 28,
-    REGISTER_SP      = 29,
-    REGISTER_FP      = 30,
-    REGISTER_RA      = 31
-}register_t;
-
 
 #endif /* _TYPES_H */

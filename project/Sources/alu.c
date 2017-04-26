@@ -12,7 +12,8 @@ void alu(operation op, word rs, word rt, word shamt, word * result) {
 	switch (op) {
 		case oper_Add:
 			temp = (int32_t)rs + (int32_t)rt;
-			if(((BIT31 && rs) == (BIT31 && rt)) && ((BIT31 && temp) ^ (BIT31 && rs))) *result = temp;
+			if(((BIT31 && rs) == (BIT31 && rt)) && ((BIT31 && temp) ^ (BIT31 && rs))) return;
+			*result = temp;
 			return;
 			break;
 		case oper_Addu:

@@ -50,9 +50,11 @@ typedef enum reg_type {
 
 void print_control_reg(control reg);
 
-void clonePipeline(control* original, control* clone);
+void copyPipeline(control* original, control* copy);
 
 void accessMemory();
+
+void init_pipeline();
 
 #endif /* PIPELINE_H_ */
 

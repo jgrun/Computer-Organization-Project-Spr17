@@ -10,4 +10,10 @@
 
 #include "types.h"
 
+word * main_mem;
+
+void init_control_reg(control ** reg);
+
+void empty_reg(control * reg);
+
 #endif /* MEMORY_H_ */
