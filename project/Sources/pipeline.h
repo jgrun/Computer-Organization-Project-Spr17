@@ -11,6 +11,7 @@
 #include "types.h"
 #include "alu.h"
 #include "reg.h"
+#include "memory.h"
 
 // maskers
 #define OP_MASK 0xfc000000
