@@ -36,9 +36,10 @@ void instruction_decode(control * IFID , control * IDEX);
 
 void execute_instruction(control * idex, control * exmem);
 
-void memory_access();
+void memory_access(control * exmem, control * memwb);
 
 void write_back(control * memwb);
+
 
 typedef enum reg_type {
 	IFID,
@@ -50,6 +51,8 @@ typedef enum reg_type {
 void print_control_reg(control reg);
 
 void clonePipeline(control* original, control* clone);
+
+void accessMemory();
 
 #endif /* PIPELINE_H_ */
 
