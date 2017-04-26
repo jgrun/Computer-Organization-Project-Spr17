@@ -39,7 +39,7 @@ int main(int argc, char * argv[]) {
 
 #ifdef TEST_PARSER
 	uint32_t length;
-	char filename[] = "text.txt";
+	char filename[] = FILE_NAME;
 	uint32_t output[NUM_LINES];
 
 	if(parse_input(&length, filename, output)) printf("Didn't read\n");

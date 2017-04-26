@@ -14,7 +14,17 @@
 #define NEGATIVE 0x00008000
 #define EXTEND16 0xffff0000
 #define EXTEND8  0xffffff00
-#define NUM_LINES 40
+
+/***************************************************************
+ * To run Program2File.txt copy "Program2File.txt" and paste
+ * 	into definition for FILE_NAME. NUM_LINES should equal 274
+ *
+ * To run Program1File.txt copy "Program1File.txt" and paste
+ *  into definition for FILE_NAME. NUM_LINES should equal 493
+ */
+
+#define NUM_LINES 274
+#define FILE_NAME "Program2File.txt"
 
 
 // 32 bit instructions

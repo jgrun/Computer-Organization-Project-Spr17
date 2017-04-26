@@ -12,6 +12,8 @@
 
 word * main_mem;
 
+void init_memory(uint32_t size);
+
 void init_control_reg(control ** reg);
 
 void empty_reg(control * reg);

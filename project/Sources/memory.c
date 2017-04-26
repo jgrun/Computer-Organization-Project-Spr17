@@ -7,6 +7,10 @@
 
 #include "memory.h"
 
+void init_memory(uint32_t size) {
+
+}
+
 void init_control_reg(control ** reg) {
 	*reg = (control *)malloc(sizeof(control));
 	empty_reg(*reg);
