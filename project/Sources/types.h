@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define NEGATIVE 0x00008000
 #define EXTEND16 0xffff0000

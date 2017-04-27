@@ -10,9 +10,7 @@
 
 #include "types.h"
 
-word * main_mem;
-
-void init_memory(uint32_t size);
+int init_memory(uint32_t size);
 
 void init_control_reg(control ** reg);
 

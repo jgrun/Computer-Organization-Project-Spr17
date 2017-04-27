@@ -7,8 +7,15 @@
 
 #include "memory.h"
 
-void init_memory(uint32_t size) {
+word * main_mem;
+uint32_t mem_size; // length of memory in words
 
+// Input number of words wanted
+int init_memory(uint32_t size) {
+	main_mem = (word *)malloc(size * sizeof(word));
+	if(!main_mem) return 1; // if malloc fails return 1;
+	mem_size = size >> 2;
+	return 0;
 }
 
 void init_control_reg(control ** reg) {
