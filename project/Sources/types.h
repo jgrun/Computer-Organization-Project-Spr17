@@ -81,19 +81,15 @@ typedef enum FunctCodes {
     funct_xor     = 0x26
 } function;
 
-// Enumerate all "operations" (R/J/I type instruction action)
-// See http://alumni.cs.ucr.edu/~vladimir/cs161/mips.html
-// These are used internally to represent operations between stages
 typedef enum Operations {
-    // Arithmetic and logical
     oper_Add,
     oper_Addu,
     oper_Addi,
     oper_Addiu,
     oper_And,
     oper_Andi,
-    oper_Div,    // Probably not supported
-    oper_Divu,   // Probably not supported
+    oper_Div,
+    oper_Divu,
     oper_Mult,
     oper_Multu,
     oper_Nor,
@@ -111,43 +107,34 @@ typedef enum Operations {
     oper_Subu,
     oper_Xor,
     oper_Xori,
-    // Constant-manipulating
     oper_Lhi,
     oper_Llo,
-    // Comparison
     oper_Slt,
     oper_Sltu,
     oper_Slti,
     oper_Sltiu,
-    // Branch
     oper_Beq,
     oper_Btqz,
     oper_Blez,
     oper_Bne,
-    // Jump
     oper_J,
     oper_Jal,
     oper_Jalr,
     oper_Jr,
-    // Load
     oper_lb,
     oper_lbu,
     oper_Lh,
     oper_Lhu,
     oper_Lw,
-
     oper_Sb,
     oper_Sh,
     oper_Sw,
-
 	oper_movn,
 	oper_movz,
-
     oper_Mfhi,
     oper_Mflo,
     oper_Mthi,
     oper_Mtlo,
-
     oper_seb,
 	oper_seh
 }operation;
