@@ -15,6 +15,8 @@
 #define NEGATIVE 0x00008000
 #define EXTEND16 0xffff0000
 #define EXTEND8  0xffffff00
+#define BIT8     0x00000080
+#define BIT16    0x00008000
 
 /***************************************************************
  * To run Program2File.txt copy "Program2File.txt" and paste
@@ -26,6 +28,15 @@
 
 #define NUM_LINES 274
 #define FILE_NAME "Program2File.txt"
+
+//#define REGISTERS
+
+//#define TEST_REGISTERS
+//#define TEST_PIPELINE
+//#define TEST_PARSER
+//#define TEST_MEMORY
+//#define TEST_INSTR_MOVE
+#define TEST_INIT
 
 
 // 32 bit instructions

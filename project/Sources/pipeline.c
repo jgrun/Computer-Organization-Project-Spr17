@@ -12,20 +12,18 @@
 
 extern word registers[32];
 
-#define TEST
-
 control * ifid;
 control * idex;
 control * exmem;
 control * memwb;
 
-void instruction_fetch(control * ifid, pc_t * pc, inst instruction) {
+void instruction_fetch(control * ifid, pc_t * pc) {
 
 	// Still need to write code for reading in instr
-#ifdef TEST
-	ifid->instr = instruction;
+#ifdef TEST_PIPELINE
+	ifid->instr = 0x2229FFF6; // Test with an addi
 #else
-
+	mem_read_word(*pc, &ifid->instr);
 #endif
 
 	ifid->opCode = (ifid->instr & OP_MASK) >> SHIFT_OP;
@@ -366,16 +364,32 @@ void memory_access(control * exmem, control * memwb)
 	copyPipeline(exmem, memwb);
 	switch(memwb->opCode)
 	{
-		case op_lw:
 		case op_lb:
 		case op_lbu:
+			mem_read_byte((exmem->ALUresult), &(memwb->memData));
+			if(exmem->opCode == op_lb) (memwb->memData) = ((memwb->memData) && BIT8) ? ((memwb->memData) | EXTEND8) : ((memwb->memData));
+			break;
 		case op_lhu:
+		case op_lh:
+			mem_read_halfword((exmem->ALUresult), &(memwb->memData));
+			if(exmem->opCode == op_lb) (memwb->memData) = ((memwb->memData) && BIT16) ? ((memwb->memData) | EXTEND16) : ((memwb->memData));
+			break;
+		case op_lw:
+			mem_read_word((exmem->ALUresult), &(memwb->memData));
+			break;
 		case op_lui:
+			mem_read_word((exmem->ALUresult), &(memwb->memData));
+			memwb->memData &= ~(0xffff0000);
+			memwb->memData <<= 16;
+			break;
 		case op_sb:
+			mem_write_byte(exmem->ALUresult, &(exmem->regRtValue));
+			break;
 		case op_sh:
+			mem_write_halfword(exmem->ALUresult, &(exmem->regRtValue));
+			break;
 		case op_sw:
-			//access memory
-			accessMemory();
+			mem_write_word(exmem->ALUresult, &(exmem->regRtValue));
 			break;
 		case op_beq:
 		case op_bne:
@@ -400,17 +414,7 @@ void write_back(control * memwb) {
 	if(memwb->MemtoReg) regValue = memwb->memData;
 	else regValue = memwb->ALUresult;
 
-#ifndef REGISTERS
-#ifdef TEST
-	if(memwb->RegWrite) printf("Write %#08x (%d) to register %d", regValue, regValue, reg);
-#endif
-#else
 	if(memwb->RegWrite) write_register(reg, &regValue);
-#endif
-}
-
-void accessMemory()
-{
 
 }
 
@@ -472,7 +476,5 @@ void init_pipeline() {
 	init_control_reg(&idex);
 	init_control_reg(&exmem);
 	init_control_reg(&memwb);
-
-	// Need to probably call init memory here as well
 }
 

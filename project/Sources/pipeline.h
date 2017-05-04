@@ -30,7 +30,7 @@
 #define SHIFT_RD 11
 #define SHIFT_SH 6
 
-void instruction_fetch(control * ifid, pc_t * pc, inst instruction);
+void instruction_fetch(control * ifid, pc_t * pc);
 
 void instruction_decode(control * IFID , control * IDEX);
 
@@ -51,8 +51,6 @@ typedef enum reg_type {
 void print_control_reg(control reg);
 
 void copyPipeline(control* original, control* copy);
-
-void accessMemory();
 
 void init_pipeline();
 

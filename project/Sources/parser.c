@@ -7,8 +7,6 @@
 
 #include "parser.h"
 
-extern word * main_mem;
-
 uint8_t storage[NUM_LINES][8];
 
 int parse_input(uint32_t * length, char * filename, uint32_t * output) {
