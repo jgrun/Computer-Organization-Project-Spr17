@@ -36,7 +36,8 @@
 //#define TEST_PARSER
 //#define TEST_MEMORY
 //#define TEST_INSTR_MOVE
-#define TEST_INIT
+//#define TEST_INIT
+#define TEST_FULL_PIPELINE
 
 
 // 32 bit instructions

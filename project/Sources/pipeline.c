@@ -272,10 +272,9 @@ void instruction_decode( control * ifid , control * idex) {
             break;
     }
 
-
-    (idex->ALUresult) = registers[idex->regRd];
-    (idex->regRsValue) = registers[idex->regRs];
-    (idex->regRtValue) = registers[idex->regRt];
+    read_register(idex->regRs, &(idex->regRsValue));
+    read_register(idex->regRt, &(idex->regRtValue));
+    read_register(idex->regRd, &(idex->ALUresult));
 
     idex->address = ( idex->address << 2 );            //jump address
 

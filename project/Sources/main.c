@@ -9,6 +9,7 @@
 #include "types.h"
 #include "parser.h"
 #include "memory.h"
+#include "hazards.h"
 
 pc_t pc = 0;
 
@@ -118,24 +119,22 @@ int main(int argc, char * argv[]) {
 	mem_read_word(5 << 2, &pc);
 	pc <<= 2;
 
-	instruction_fetch(ifid, &pc);
-	instruction_decode(ifid, idex);
-	execute_instruction(idex, exmem);
-	memory_access(exmem, memwb);
-	write_back(memwb);
+	while(1) {
+		instruction_fetch(ifid, &pc);
+		instruction_decode(ifid, idex);
+		execute_instruction(idex, exmem);
+		memory_access(exmem, memwb);
+		write_back(memwb);
 
-	pc += 4;
+		pc += 4;
 
-	instruction_fetch(ifid, &pc);
-	instruction_decode(ifid, idex);
-	execute_instruction(idex, exmem);
-	memory_access(exmem, memwb);
-	write_back(memwb);
-
-	print_registers();
+		print_registers();
+	}
 
 	mem_free();
 #endif
 
-	while(1);
+#ifdef TEST_FULL_PIPELINE
+
+#endif
 }
