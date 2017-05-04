@@ -14,6 +14,10 @@
 
 void init_hazards();
 
-void hazard_detection(control * ifid, control * idex, control * exmem, control * memwb, pc_t * pc);
+void hazard_detection(control * ifid, control * idex, control * exmem, control * memwb, pc_t * p, sim_results * sim);
+
+void backup_pipeline(control * ifid, control * idex, control * exmem, control * memwb, pc_t * p);
+
+void restore_pipeline(control * ifid, control * idex, control * exmem, control * memwb, pc_t * p);
 
 #endif /* HAZARDS_H_ */

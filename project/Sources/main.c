@@ -19,7 +19,8 @@ extern control * exmem;
 extern control * memwb;
 
 int main(int argc, char * argv[]) {
-
+	sim_results sim;
+	init_sim(&sim);
 #ifdef TEST_REGISTERS
 	init_registers();
 	word value = 0;
@@ -137,4 +138,9 @@ int main(int argc, char * argv[]) {
 #ifdef TEST_FULL_PIPELINE
 
 #endif
+}
+
+void init_sim(sim_results * sim) {
+	sim->cycles = 0;
+	sim->instruction_count = 0;
 }

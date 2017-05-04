@@ -183,4 +183,11 @@ typedef struct CONTROL_REGISTER {
     uint32_t memData;
 }control;
 
+typedef struct sim_results_t {
+	uint32_t instruction_count;
+	uint32_t cycles;
+}sim_results;
+
+void init_sim(sim_results * sim);
+
 #endif /* _TYPES_H */
