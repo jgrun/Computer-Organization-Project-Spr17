@@ -37,7 +37,11 @@ uint32_t mem_size_words() {
 }
 
 void mem_read_word(uint32_t address, word * data) {
-	*data = *((uint32_t*)(main_mem + address));
+	if(address >= 8192) {
+		printf("\n");
+		return;
+	}
+	*data = *((uint32_t*)(main_mem + (address)));
 }
 
 void mem_read_halfword(uint32_t address, word * data) {
@@ -52,7 +56,8 @@ void mem_read_byte(uint32_t address, word * data) {
 
 void mem_write_word(uint32_t address, word * data) {
 	uint32_t index = address;
-	*((uint32_t*)(main_mem + index)) = *data;
+	//*((uint32_t*)(main_mem + index)) = *data;
+	memcpy((void*)(main_mem + index), (void*)(data), 4);
 }
 
 void mem_write_halfword(uint32_t address, word * data) {

@@ -29,8 +29,8 @@ void hazard_detection(control * ifid, control * idex, control * exmem, control *
 	uint32_t memDest = 0;
 	if(exmem->RegDst) exDest = exmem->regRd;
 	else exDest = exmem->regRt;
-	if(exmem->RegDst) memDest = exmem->regRd;
-	else memDest = exmem->regRt;
+	if(memwb->RegDst) memDest = memwb->regRd;
+	else memDest = memwb->regRt;
 
 	if(exmem->RegWrite && (exDest != 0) && (exDest == idex->regRs)) {
 		forwarding = 1;
@@ -89,7 +89,9 @@ void hazard_detection(control * ifid, control * idex, control * exmem, control *
 	}
 
 	if(idex->jump || idex->PCSrc) *pc = idex->pcNext;
-	else if (stall) empty_reg(ifid);
+	else if (stall) {
+		empty_reg(ifid);
+	}
 	else *pc += 4;
 }
 
