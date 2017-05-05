@@ -36,13 +36,14 @@
 
 //#define REGISTERS
 
+#define SINGLE_CYCLE
 //#define TEST_REGISTERS
 //#define TEST_PIPELINE
 //#define TEST_PARSER
 //#define TEST_MEMORY
 //#define TEST_INSTR_MOVE
 //#define TEST_INIT
-#define TEST_FULL_PIPELINE
+//#define TEST_FULL_PIPELINE
 
 
 // 32 bit instructions
@@ -191,6 +192,7 @@ typedef struct CONTROL_REGISTER {
 typedef struct sim_results_t {
 	uint32_t instruction_count;
 	uint32_t cycles;
+	uint8_t stall;
 }sim_results;
 
 void init_sim(sim_results * sim);

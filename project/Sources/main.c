@@ -174,6 +174,33 @@ int main(int argc, char * argv[]) {
 #endif
 	}
 #endif
+
+#ifdef SINGLE_CYCLE
+	startup();
+
+	while(1) {
+		instruction_fetch(ifid, &pc);
+		if(sim.stall)  {
+			empty_reg(ifid);
+		}
+		instruction_decode(ifid, idex);
+		hazard_detection(ifid, idex, exmem, memwb, &pc, &sim);
+		execute_instruction(idex, exmem);
+		memory_access(exmem, memwb);
+		write_back(memwb);
+
+		sim.cycles++;
+
+		if(pc == 0) break;
+
+		if((pc/4) + 1 == 17) {
+			printf("%d\n", sim.cycles);
+//			printf(" ");
+		}
+	}
+
+	printf("%d\n", sim.cycles);
+#endif
 }
 
 void init_sim(sim_results * sim) {
