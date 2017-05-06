@@ -8,6 +8,8 @@
 
 cache_t cache_orig;
 
+#include "cache.h"
+
 typedef struct dirBlock{
     bool *validBit;
     bool dirtyBit;
