@@ -8,7 +8,14 @@
 
 cache_t cache_orig;
 
-typedef struct directCahes
+typedef struct dirBlock{
+    bool *validBit;
+    bool dirtyBit;
+    tag_t tagBit;
+    word_t *dataBit;
+} dirCacheBlock;
+
+typedef struct directCache
 {
 	    uint32_t blockNum;
 	    uint32_t blockSize;
@@ -21,15 +28,35 @@ typedef struct directCahes
 	    //Flag to tell if active fetch from memory
 	    bool fetching;
 	    //Used for getting multiple block lines
-	    uint8_t subsequent_fetching;
-	    uint32_t penalty_count;
-	    uint32_t target_address;
-	    //direct_cache_block_t *blocks;
+	    uint8_t afterFetch;
+	    uint32_t penaltyNum;
+	    uint32_t address;
+	    dirCacheBlock *blocks;
 	    word_t *words;
 
+}dirCache;
 
-}directCache;
-typedef dCBlock;
+typedef struct writeBuffer {
+    uint32_t addressVal;
+    bool writing;
+    uint32_t penaltyNum;
+    uint32_t afterWrite;
+    word_t *dataVal;
+} writeBuff;
+
+typedef struct PROFILE {
+    cache_status_t  i_cache_status;
+    cache_status_t  i_cache_status_prev;
+    uint32_t        i_cache_hit_count;
+    uint32_t        i_cache_access_count;
+    cache_status_t  d_cache_status;
+    cache_status_t  d_cache_status_prev;
+    uint32_t        d_cache_hit_count;
+    uint32_t        d_cache_access_count;
+    uint32_t        instruction_count;
+    uint32_t        cycles;
+    uint32_t        debug;
+} profile_t;
 
 void setDataAndInstructionCache(cache_t *cache_new)
 {
@@ -38,71 +65,68 @@ void setDataAndInstructionCache(cache_t *cache_new)
 
 	//Set Data Cache
     uint32_t blocks = (cache_new->sizeData/4) / cache_new->blockData;
-    dataCache_t = direct_cache_init(blocks, cache_new->blockData);
+    dataCache_t = cacheSetup(blocks, cache_new->blockData);
 
     //Set Instruction Cache
     uint32_t num_blocks = (cache_new->sizeInstr/4) / cache_new->blockInstr;
-    instructionCache_t = directCacheInitialization(num_blocks, cache_new->blockInstr);
+    instructionCache_t = cacheSetup(num_blocks, cache_new->blockInstr);
 }
 
-/*
-directCache * directCacheInitialization(uint32_t blocks, uint32_t size)
+
+directCache * cacheSetup(uint32_t blockNum, uint32_t blockSize)
 {
-    typedef words;
-	words *word = (words *)malloc(sizeof(words)*blocks*size);
-    directCache *dirCache = (directCache *)malloc(sizeof(directCache));
-    dCBlock *numBlocks = (dCBlock *)malloc(sizeof(dCBlock) * blocks);
-    bool *validBits = (bool *)malloc(sizeof(bool) * blocks * size);
+    typedef uint32_t words;
+	words *word = (words *)malloc(sizeof(words)*blockNum*blockSize);
+    dirCache *dirCache1 = (dirCache *)malloc(sizeof(dirCache));
+    dirCacheBlock *cacheBlocks = (dirCacheBlock *)malloc(sizeof(dirCacheBlock) * blocksize);
+    bool *validBits = (bool *)malloc(sizeof(bool) * blockNum * blockSize);
     uint32_t i = 0;
-    for(i = 0; i < blocks; i++)
+    for(i = 0; i < blockNum; i++)
     {
-        blocks[i].valid = validBits + i * size;
-        blocks[i].data = word + i * size;
+        cacheBlocks[i].validBit = validBits + i * blockSize;
+        cacheBlocks[i].dataBit = word + i * blockSize;
 
     }
-
-    dirCache->blocks = blocks;
-    dirCache->words = words;
-    //crash if unable to allocate memory
-    if(cache == NULL || cache->blocks == NULL){
-        cprintf(ANSI_C_RED, "cache_init: Unable to allocate direct mapped cache\n");
-        assert(0);
-    }
-    cache->num_blocks = num_blocks;
-    cache->block_size = block_size;
-
-    //get the number of bits the index takes up
-    uint32_t index_size = 1;
-    while((num_blocks>>index_size) != 0) index_size+=1;
-    index_size--;
-    cache->index_size = index_size;
-    //cache size is 2^n blocks, so n bits are needed for the index
-    //block size is 2^m words, m bits needed for word within block
-    //tag bits = 32 - (n + m + 2)
-    //This is magic. Look in the header file for some sort of explanation
-    uint32_t inner_index_size = 1;
-    while((block_size>>inner_index_size) != 0) inner_index_size+=1;
-    inner_index_size--;
-    cache->inner_index_size = inner_index_size;
-    cache->inner_index_mask = ((1 << (inner_index_size + 2)) - 1) & ~3;
-    cache->tag_size = 32 - cache->index_size - cache->inner_index_size - 2;
-    cache->index_mask = ((1 << (cache->index_size + cache->inner_index_size + 2)) - 1);
-    cache->tag_mask = ~cache->index_mask;
-    cache->index_mask &= ~(cache->inner_index_mask | 0x3);
 
     //Set up the fetch variables
-    cache->fetching = false;
-    cache->penalty_count = 0;
-    cache->subsequent_fetching = 0;
+    dirCache1->fetching = false;
+    dirCache1->penaltyNum = 0;
+    dirCache1->afterFetch = 0;
+
+    dirCache1->blocks = cacheBlocks;
+    dirCache1->words = word;
+
+    dirCache1->blockNum = blockNum;
+    dirCache1->blockSize = blockSize;
+
+    uint32_t indexSize = calculateIndex(blockNum);
+    dirCache1->indexSize = indexSize;
+
+    uint32_t firstIndex = calculateIndex(blockSize);
+    dirCache1->inIndexSize = firstIndex;
+
+    dirCache1->inIndexMask = ((1 << (firstIndex + 2)) - 1) & ~3;
+    dirCache1->tagSize = 32 - dirCache1->indexSize - dirCache1->inIndexSize - 2;
+    dirCache1->indexMask = ((1 << (dirCache1->indexSize + dirCache1->inIndexSize + 2)) - 1);
+    dirCache1->tagMask = ~dirCache1->indexMask;
+    dirCache1->indexMask &= ~(dirCache1->inIndexMask | 0x3);
 
     //Invalidate all data in the cache
-    uint8_t j;
-    for(i = 0; i < cache->num_blocks; i++){
-        cache->blocks[i].dirty = false;
-        for(j = 0; j < cache->block_size; j++){
-            cache->blocks[i].valid[j] = false;
+    for(int i = 0; i < dirCache1->blockNum; i++){
+        dirCache1->blocks[i].dirtyBit = false;
+        for(int j = 0; j < dirCache1->blockSize; j++){
+            dirCache1->blocks[i].validBit[j] = false;
         }
     }
-    return cache;
+    return dirCache1;
 }
-*/
+
+uint32_t calculateIndex(int num)
+{
+    uint32_t index = 1;
+    while((num>>index) != 0)
+    	index+=1;
+    index--;
+
+    return index;
+}
