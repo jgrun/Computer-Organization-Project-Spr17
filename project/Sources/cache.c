@@ -6,6 +6,9 @@
  */
 //2-way set associative data cache, single line (Two 512 Byte Caches):
 
+#include "cache.h"
+
+
 cache_t cache_orig;
 
 #include "cache.h"
