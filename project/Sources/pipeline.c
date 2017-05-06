@@ -45,6 +45,8 @@ void instruction_fetch(control * ifid, pc_t * pc) {
 	ifid->pcNext = *pc + 4;
 }
 
+extern pc_t pc;
+
 void instruction_decode( control * ifid , control * idex) {
     copyPipeline(ifid, idex);
 
@@ -375,11 +377,6 @@ void memory_access(control * exmem, control * memwb)
 			break;
 		case op_lw:
 			mem_read_word((exmem->ALUresult), &(memwb->memData));
-			break;
-		case op_lui:
-			mem_read_word((exmem->ALUresult), &(memwb->memData));
-			memwb->memData &= ~(0xffff0000);
-			memwb->memData <<= 16;
 			break;
 		case op_sb:
 			mem_write_byte(exmem->ALUresult, &(exmem->regRtValue));

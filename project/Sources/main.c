@@ -18,6 +18,8 @@ extern control * idex;
 extern control * exmem;
 extern control * memwb;
 
+extern uint8_t * main_mem;
+
 int main(int argc, char * argv[]) {
 	sim_results sim;
 	init_sim(&sim);
@@ -136,11 +138,106 @@ int main(int argc, char * argv[]) {
 #endif
 
 #ifdef TEST_FULL_PIPELINE
+	startup();
 
+	while(1) {
+		backup_pipeline(ifid, idex, exmem, memwb, &pc);
+		write_back(memwb);
+		memory_access(exmem, memwb);
+		execute_instruction(idex, exmem);
+		instruction_decode(ifid, idex);
+		instruction_fetch(ifid, &pc);
+		hazard_detection(ifid, idex, exmem, memwb, &pc, &sim);
+
+		sim.cycles++;
+
+		if(pc == 0) {
+			break;
+		}
+
+#ifdef PART1
+		if(((pc / 4) == 20) || (pc/4) == 33) {
+			printf("cycle count: %d\n", sim.cycles);
+		}
+		if(((pc/4) == 153) || ((pc/4) == 156) || ((pc/4) == 157) || ((pc/4) == 160) || ((pc/4) == 156) || ((pc/4) == 162) || ((pc/4) == 165)) {
+			printf("cycle count at %d: %d\n", (pc/4), sim.cycles);
+		}
+#endif
+
+#ifdef PART2
+		if(((pc / 4) == 43)) {
+			printf("cycle count: %d\n", sim.cycles);
+		}
+		if(((pc/4) == 84) || ((pc/4) == 47)) {
+			printf("check state\n");
+		}
+#endif
+	}
+#endif
+
+#ifdef SINGLE_CYCLE
+	startup();
+
+	while(1) {
+		instruction_fetch(ifid, &pc);
+		if(sim.stall)  {
+			empty_reg(ifid);
+		}
+		instruction_decode(ifid, idex);
+		hazard_detection(ifid, idex, exmem, memwb, &pc, &sim);
+		execute_instruction(idex, exmem);
+		memory_access(exmem, memwb);
+		write_back(memwb);
+
+		sim.cycles++;
+
+		if(pc == 0) break;
+
+		if((pc/4) + 1 == 17) {
+			printf("%d\n", sim.cycles);
+//			printf(" ");
+		}
+	}
+
+	printf("%d\n", sim.cycles);
 #endif
 }
 
 void init_sim(sim_results * sim) {
 	sim->cycles = 0;
 	sim->instruction_count = 0;
+}
+
+void startup() {
+	uint32_t length;
+	char filename[] = FILE_NAME;
+	uint32_t output[NUM_LINES];
+
+	// Initializations
+	init_memory(2048);
+	init_registers();
+	init_pipeline();
+	init_hazards();
+
+	// Useful variables
+	int i;
+	word data;
+
+	// Setup before execution
+	parse_input(&length, filename, output);
+
+	for(i = 0; i < NUM_LINES; i++) {
+		mem_write_word(4*i, &output[i]);
+	}
+
+	// Write sp, fp and pc to registers
+	mem_read_word(0, &data);
+	write_register(r_SP, &data);
+	mem_read_word(1 << 2, &data);
+	write_register(r_FP, &data);
+	mem_read_word(5 << 2, &pc);
+	pc <<= 2;
+#ifdef PART2
+//	mem_read_word
+#endif
 }

@@ -27,10 +27,11 @@ void hazard_detection(control * ifid, control * idex, control * exmem, control *
 	uint8_t stall = 0;
 	uint32_t exDest = 0;
 	uint32_t memDest = 0;
+
 	if(exmem->RegDst) exDest = exmem->regRd;
 	else exDest = exmem->regRt;
-	if(exmem->RegDst) memDest = exmem->regRd;
-	else memDest = exmem->regRt;
+	if(memwb->RegDst) memDest = memwb->regRd;
+	else memDest = memwb->regRt;
 
 	if(exmem->RegWrite && (exDest != 0) && (exDest == idex->regRs)) {
 		forwarding = 1;
@@ -84,13 +85,24 @@ void hazard_detection(control * ifid, control * idex, control * exmem, control *
 	if(idex->MemRead && ((idex->regRt == ifid->regRs) || (idex->regRt == ifid->regRt)) && !(ifid->opCode == op_jtype || ifid->opCode == op_jal)) {
 		if(!(idex->regRt == r_zero)) {
 			stall = 1;
-			empty_reg(ifid);
 		}
 	}
 
-	if(idex->jump || idex->PCSrc) *pc = idex->pcNext;
-	else if (stall) empty_reg(ifid);
+	if(idex->MemRead && ((exmem->regRs == ifid->regRt) || (exmem->regRs == ifid->regRs)) && ((ifid->opCode == op_beq) || (ifid->opCode == op_blitz) || (ifid->opCode == op_bne) || (ifid->opCode == op_bgtz) || (ifid->opCode == op_blez))) {
+		if(!(exmem->regRt == r_zero)) {
+			stall = 1;
+		}
+	}
+	/* Branch hazards turn on if branches are used
+	 * check if load is occurring into stage after execute
+	 */
+
+	if(exmem->jump || exmem->PCSrc) *pc = exmem->pcNext;
+	else if (stall) {
+		empty_reg(ifid);
+	}
 	else *pc += 4;
+	sim->stall = stall;
 }
 
 void backup_pipeline(control * ifid, control * idex, control * exmem, control * memwb, pc_t * p) {

@@ -21,7 +21,9 @@ void read_register(r_Name reg, word * value) {
 }
 
 void write_register(r_Name reg, word * value) {
-	if(reg) registers[reg] = *value;
+	if(reg) {
+		registers[reg] = *value;
+	}
 }
 
 void print_registers() {

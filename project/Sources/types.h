@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define NEGATIVE 0x00008000
 #define EXTEND16 0xffff0000
@@ -24,20 +25,25 @@
  *
  * To run Program1File.txt copy "Program1File.txt" and paste
  *  into definition for FILE_NAME. NUM_LINES should equal 493
+ *
+ * Should define appropriate part for program.
  */
 
-#define NUM_LINES 274
-#define FILE_NAME "Program2File.txt"
+#define PART1
+//#define PART2
+#define NUM_LINES 493
+#define FILE_NAME "Program1File.txt"
 
 //#define REGISTERS
 
+#define SINGLE_CYCLE
 //#define TEST_REGISTERS
 //#define TEST_PIPELINE
 //#define TEST_PARSER
 //#define TEST_MEMORY
 //#define TEST_INSTR_MOVE
 //#define TEST_INIT
-#define TEST_FULL_PIPELINE
+//#define TEST_FULL_PIPELINE
 
 
 // 32 bit instructions
@@ -186,8 +192,11 @@ typedef struct CONTROL_REGISTER {
 typedef struct sim_results_t {
 	uint32_t instruction_count;
 	uint32_t cycles;
+	uint8_t stall;
 }sim_results;
 
 void init_sim(sim_results * sim);
+
+void startup();
 
 #endif /* _TYPES_H */
